@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace AckAck.Test
 {
+    [Serializable]
     public class AddItemCommand : Command<List<string>, int>
     {
         public readonly string Item;
@@ -28,34 +29,31 @@ namespace AckAck.Test
     {
 
 
-        [Test]
-        public void Smoke()
+    [Test]
+    public void Smoke(int batchSize = 100)
+    {
+        Console.WriteLine("Batch size: " + batchSize);
+        var sw = new Stopwatch();
+        var prevayler = new Prevayler<List<string>>(new List<string>());
+        sw.Start();
+        var tasks = Enumerable
+            .Range(0, 10000)
+            .Select(i => prevayler.ExecuteAsync(new AddItemCommand(i.ToString()))).ToArray();
+        Task.WaitAll(tasks);
+        sw.Stop();
+        Console.WriteLine("async elapsed: " + sw.Elapsed);
+        prevayler.Dispose();
+
+    }
+
+    [Test]
+    public void ProgressiveBatchSizes()
+    {
+        foreach (var batchSize in Enumerable.Range(0,8).Select(i => 10 * Math.Pow(2, i)))
         {
-            var sw = new Stopwatch();
-            var prevayler = new Prevayler<List<string>>(new List<string>());
-            
-
-            sw.Start();
-            foreach (int i in Enumerable.Range(0, 10))
-            {
-                int result = prevayler.Execute(new AddItemCommand(i.ToString()));
-                Console.WriteLine("sync result: " + result);
-
-            }
-
-            var tasks = new List<Task>();
-            foreach (int i in Enumerable.Range(0, 100000))
-            {
-               var task = prevayler.ExecuteAsync(new AddItemCommand(i.ToString()));
-                tasks.Add(task.ContinueWith(t => Console.WriteLine("async result:" + t.Result)));
-
-            }
-
-            Task.WaitAll(tasks.ToArray());
-            sw.Stop();
-            Console.WriteLine("Elapsed: " + sw.Elapsed);
-
+            Smoke((int)batchSize);
         }
+    }
 
         [Test]
         public void RingBufferRollover()

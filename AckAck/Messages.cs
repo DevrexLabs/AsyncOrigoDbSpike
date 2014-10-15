@@ -1,7 +1,9 @@
-﻿using System.Runtime.Remoting.Messaging;
+﻿using System;
+using System.Runtime.Remoting.Messaging;
 
 namespace AckAck
 {
+    [Serializable]
     public abstract class Command<M, R> : Command
     {
         public abstract R Execute(M model);
@@ -12,6 +14,7 @@ namespace AckAck
         }
     }
 
+    [Serializable]
     public abstract class Command<M> : Command
     {
         public abstract void Execute(M model);
@@ -33,7 +36,7 @@ namespace AckAck
         }
     }
 
-
+    [Serializable]
     public class Query
     {
         public readonly string Value;
@@ -44,6 +47,7 @@ namespace AckAck
         }
     }
 
+    [Serializable]
     public abstract class Command
     {
         public abstract object ExecuteImpl(object model);

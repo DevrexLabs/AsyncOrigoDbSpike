@@ -13,7 +13,7 @@ namespace AckAck
         readonly ActorSystem _actorSystem;
         readonly ActorRef _dispatcher;
 
-        public Prevayler(M model)
+        public Prevayler(M model, int batchSize = 100)
         {
             // the kernel is an origodb component which 
             // synchronizes reads and writes to the model
@@ -32,7 +32,7 @@ namespace AckAck
 
             //journaler writes commands to the journal in batches or at specific intervals
             //before passing to the executor
-            var journaler = _actorSystem.ActorOf(Props.Create(() => new JournalWriter(executor)));
+            var journaler = _actorSystem.ActorOf(Props.Create(() => new JournalWriter(executor, batchSize)));
 
             //dispatcher prepares initial message and passes to journaler
             _dispatcher = _actorSystem.ActorOf(Props.Create(() => new Dispatcher(journaler)));
@@ -60,6 +60,7 @@ namespace AckAck
 
         public void Dispose()
         {
+            _actorSystem.Shutdown();
             _actorSystem.WaitForShutdown();
         }
 
