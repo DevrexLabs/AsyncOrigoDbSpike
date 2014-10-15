@@ -38,9 +38,11 @@ namespace AckAck
         {
             BatchSize = batchSize;
             _executor = executor;
-            Receive<Tuple<Command, ActorRef>>(Accept);
+            Receive<Tuple<Command, ActorRef>>(t => Accept(t));
+            Receive<ReceiveTimeout>(_ => Go());
+
             SetReceiveTimeout(Interval);
-            Receive<ReceiveTimeout>(HandleTimeout);
+            
 
             _eventStore = EventStoreConnection.Create(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1113));
             _eventStore.ConnectAsync().Wait();
@@ -48,10 +50,9 @@ namespace AckAck
 
         }
 
-        public bool HandleTimeout(ReceiveTimeout _)
+        public void HandleTimeout(ReceiveTimeout _)
         {
             Go();
-            return true;
         }
 
         private void Go()
@@ -81,18 +82,15 @@ namespace AckAck
             
         }
 
-        public bool Accept(Tuple<Command, ActorRef> command)
+        public void Accept(Tuple<Command, ActorRef> command)
         {
             _commandBuffer.Add(command);
             if (_commandBuffer.Count == BatchSize) Go();
-            return true;
         }
 
         protected override void PostStop()
         {
-            base.PostStop();
             _eventStore.Close();
-            Console.WriteLine("PostStop called");
         }
     }
 }

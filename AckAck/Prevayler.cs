@@ -38,14 +38,14 @@ namespace AckAck
             _dispatcher = _actorSystem.ActorOf(Props.Create(() => new Dispatcher(journaler)));
         }
 
-        public async Task<R> ExecuteAsync<R>(Command<M,R> command)
+        public Task<R> ExecuteAsync<R>(Command<M,R> command)
         {
-            return await _dispatcher.Ask<R>(command);
+            return _dispatcher.Ask<R>(command);
         }
 
-        public async Task ExecuteAsync(Command<M> command)
+        public Task ExecuteAsync(Command<M> command)
         {
-            await _dispatcher.Ask(command);
+            return _dispatcher.Ask(command);
         }
 
         public R Execute<R>(Command<M, R> command)
