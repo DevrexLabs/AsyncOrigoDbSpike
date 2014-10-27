@@ -1,4 +1,3 @@
-using System;
 using Akka.Actor;
 
 namespace AckAck
@@ -9,20 +8,19 @@ namespace AckAck
         public Executor(Kernel kernel)
         {
             _kernel = kernel;
-            Receive<Tuple<Command,ActorRef>[]>(ExecuteCommands);
+            Receive<CommandContext[]>(c => ExecuteCommands(c));
         }
 
-        private bool ExecuteCommands(Tuple<Command,ActorRef>[] tuples)
+        private void ExecuteCommands(CommandContext[] commandContexts)
         {
-            foreach (var tuple in tuples)
+            foreach (var context in commandContexts)
             {
-                var result = _kernel.Execute(tuple.Item1);
+                var result = _kernel.Execute(context.Command);
 
                 //send a return message to the external caller
                 // will correlate with the call to Ask<>() in Prevayler.ExecuteAsync()
-                tuple.Item2.Tell(result, Context.Parent);
+                context.Initiator.Tell(result, Context.Parent);
             }
-            return true;
         }
     }
 }

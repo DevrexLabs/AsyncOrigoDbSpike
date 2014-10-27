@@ -1,6 +1,8 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Akka.Actor;
+using EventStore.ClientAPI;
 
 namespace AckAck
 {
@@ -20,8 +22,11 @@ namespace AckAck
             // will be shared by 
             var kernel = new Kernel(model);
 
-            
 
+            var eventStore = EventStoreConnection.Create(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1113));
+            eventStore.ConnectAsync().Wait();
+            var journalWriter = new EventStoreJournal(eventStore);
+            //var journalWriter = new NullJournalWriter();
             //build the chain of actors backwards
             _actorSystem = ActorSystem.Create("prevayler");
 
@@ -32,7 +37,7 @@ namespace AckAck
 
             //journaler writes commands to the journal in batches or at specific intervals
             //before passing to the executor
-            var journaler = _actorSystem.ActorOf(Props.Create(() => new JournalWriter(executor, batchSize)));
+            var journaler = _actorSystem.ActorOf(Props.Create(() => new JournalWriter(executor, batchSize, journalWriter)));
 
             //dispatcher prepares initial message and passes to journaler
             _dispatcher = _actorSystem.ActorOf(Props.Create(() => new Dispatcher(journaler)));

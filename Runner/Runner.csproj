@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E0C71B98-17AF-4E95-ABC3-E8D31C631696}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{FBF952D2-61B1-4D02-9EAB-E2F5AB35088B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AckAck</RootNamespace>
-    <AssemblyName>AckAck</AssemblyName>
+    <RootNamespace>Runner</RootNamespace>
+    <AssemblyName>Runner</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -30,22 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Akka">
-      <HintPath>..\packages\Akka.0.6.3\lib\net45\Akka.dll</HintPath>
-    </Reference>
-    <Reference Include="Disruptor">
-      <HintPath>..\packages\Disruptor.Net.2.10.0\lib\Disruptor.dll</HintPath>
-    </Reference>
-    <Reference Include="EventStore.ClientAPI">
-      <HintPath>..\packages\EventStore.Client.3.0.0\lib\net40\EventStore.ClientAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -55,22 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BufferEntry.cs" />
-    <Compile Include="CommandContext.cs" />
-    <Compile Include="EventStoreJournal.cs" />
-    <Compile Include="IJournalWriter.cs" />
-    <Compile Include="JournalAcknowledgement.cs" />
-    <Compile Include="Kernel.cs" />
-    <Compile Include="Messages.cs" />
-    <Compile Include="Dispatcher.cs" />
-    <Compile Include="Executor.cs" />
-    <Compile Include="JournalWriter.cs" />
-    <Compile Include="Prevayler.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RingBuffer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AckAck.Test\AckAck.Test.csproj">
+      <Project>{9a85ce33-5324-4f1c-8f3e-41b2752490cc}</Project>
+      <Name>AckAck.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AckAck\AckAck.csproj">
+      <Project>{e0c71b98-17af-4e95-abc3-e8d31c631696}</Project>
+      <Name>AckAck</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -10,21 +10,7 @@ namespace AckAck
         public Dispatcher(ActorRef journalWriter)
         {
             _journalWriter = journalWriter;
-            Receive<Command>(EnqueueCommand);
-            Receive<Query>(ExecuteQuery);
+            Receive<Command>(command => _journalWriter.Tell(new CommandContext(command, Sender)));
         }
-
-        private bool EnqueueCommand(Command command)
-        {
-            _journalWriter.Tell(Tuple.Create(command, Sender));
-            return true;
-        }
-
-        private bool ExecuteQuery(Query query)
-        {
-            _journalWriter.Tell(Tuple.Create(query, Sender));
-            return true;
-        }
-
     }
 }
