@@ -1,19 +1,16 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using Akka.Actor;
+using System.Threading.Tasks.Dataflow;
 using EventStore.ClientAPI;
 
 namespace AckAck
 {
-    /// <summary>
-    /// Prevalence engine 
-    /// </summary>
-    /// <typeparam name="M"></typeparam>
     public class Prevayler<M> : IDisposable
     {
-        readonly ActorSystem _actorSystem;
-        readonly ActorRef _dispatcher;
+
+        private TplJournalWriter _journalWriter;
+        private Dispatcher _dispatcher;
 
         public Prevayler(M model, int batchSize = 100)
         {
@@ -21,36 +18,35 @@ namespace AckAck
             // synchronizes reads and writes to the model
             // will be shared by 
             var kernel = new Kernel(model);
+            _dispatcher = new Dispatcher(kernel);
 
 
             var eventStore = EventStoreConnection.Create(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1113));
             eventStore.ConnectAsync().Wait();
             var journalWriter = new EventStoreJournal(eventStore);
-            //var journalWriter = new NullJournalWriter();
-            //build the chain of actors backwards
-            _actorSystem = ActorSystem.Create("prevayler");
+            _journalWriter = new TplJournalWriter(journalWriter, _dispatcher, batchSize);
 
-            //executor executes commands
-            //it could also handle queries but would allow either a single query or command at time.
-            //better to add a group of actors that can execute queries concurrently
-            var executor = _actorSystem.ActorOf(Props.Create(() => new Executor(kernel)));
-
-            //journaler writes commands to the journal in batches or at specific intervals
-            //before passing to the executor
-            var journaler = _actorSystem.ActorOf(Props.Create(() => new JournalWriter(executor, batchSize, journalWriter)));
-
-            //dispatcher prepares initial message and passes to journaler
-            _dispatcher = _actorSystem.ActorOf(Props.Create(() => new Dispatcher(journaler)));
         }
 
-        public Task<R> ExecuteAsync<R>(Command<M,R> command)
+        public async Task<R> ExecuteAsync<R>(Command<M,R> command)
         {
-            return _dispatcher.Ask<R>(command);
+            var response = new WriteOnceBlock<object>(r => r);
+            _journalWriter.Post(new CommandContext(command, response));
+            return (R) await response.ReceiveAsync();
         }
 
         public Task ExecuteAsync(Command<M> command)
         {
-            return _dispatcher.Ask(command);
+            var response = new WriteOnceBlock<object>(b => b);
+            _journalWriter.Post(new CommandContext(command, response));
+            return response.ReceiveAsync();
+        }
+
+        public async Task<R> ExecuteAsync<R>(Query<M, R> query)
+        {
+            var response = new WriteOnceBlock<object>(r => r);
+            _dispatcher.Post(new QueryContext(query, response));
+            return (R)await response.ReceiveAsync();
         }
 
         public R Execute<R>(Command<M, R> command)
@@ -65,8 +61,6 @@ namespace AckAck
 
         public void Dispose()
         {
-            _actorSystem.Shutdown();
-            _actorSystem.WaitForShutdown();
         }
 
     }

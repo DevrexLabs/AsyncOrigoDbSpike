@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using EventStore.ClientAPI;
 using NUnit.Framework;
 
@@ -29,14 +31,36 @@ namespace AckAck.Test
     [TestFixture]
     public class Class1
     {
+        [Test]
+        public void TplActionBlockSpike()
+        {
 
+
+            BufferBlock<int> buffer = new BufferBlock<int>();
+            var reporter = new ActionBlock<int>(i => Console.WriteLine(i));
+            ActionBlock<int> actionBlock = new ActionBlock<int>(
+
+                i =>
+                {
+                    Thread.Sleep(i);
+                    reporter.Post(i * 2);
+                });
+            buffer.LinkTo(actionBlock);
+            for (int i = 0; i < 100; i++)
+            {
+                buffer.Post(i);
+            }
+            buffer.Complete();
+            buffer.Completion.Wait();
+        }
 
         [Test]
-        public void Smoke(int batchSize = 100)
+        public void Smoke()
         {
-            Console.WriteLine("Batch size: " + batchSize);
+            if (_batchSize == 0) _batchSize = 100;
+            Console.WriteLine("Batch size: " + _batchSize);
             var sw = new Stopwatch();
-            var prevayler = new Prevayler<List<string>>(new List<string>(), batchSize);
+            var prevayler = new Prevayler<List<string>>(new List<string>(), _batchSize);
             sw.Start();
             var tasks = Enumerable
                 .Range(0, 10000)
@@ -66,12 +90,65 @@ namespace AckAck.Test
 
         }
 
+        private int _batchSize;
         [Test]
         public void ProgressiveBatchSizes()
         {
             foreach (var batchSize in Enumerable.Range(0, 12).Select(i => 10 * Math.Pow(2, i)))
             {
-                Smoke((int)batchSize);
+                _batchSize = (int)batchSize;
+                Smoke();
+            }
+        }
+
+        [Test]
+        public void CorrectnessTest()
+        {
+            var prevayler = new Prevayler<IntModel>(new IntModel(), 100);
+            var sum = 0;
+            var tasks = new List<Task>();
+            for (int i = 1; i <= 200; i++)
+            {
+                sum += i;
+                var command = new SumCommand(i);
+                tasks.Add(
+                prevayler.ExecuteAsync(command)
+                    .ContinueWith(t => Assert.AreEqual(t.Result, command.Operand)));
+            }
+            Task.WaitAll(tasks.ToArray());
+            int result = prevayler.ExecuteAsync(new GetSumQuery()).Result;
+            Assert.AreEqual(result, sum);
+
+        }
+
+        public class IntModel
+        {
+
+            public int Value;
+        }
+
+        public class GetSumQuery : Query<IntModel, int>
+        {
+
+            public override int Execute(IntModel model)
+            {
+                return model.Value;
+            }
+        }
+
+        [Serializable]
+        public class SumCommand : Command<IntModel,int>
+        {
+            public readonly int Operand;
+            public SumCommand(int i)
+            {
+                Operand = i;
+            }
+
+            public override int Execute(IntModel model)
+            {
+                model.Value += Operand;
+                return Operand;
             }
         }
 

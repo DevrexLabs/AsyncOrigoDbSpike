@@ -9,6 +9,9 @@ using EventStore.ClientAPI;
 
 namespace AckAck
 {
+
+
+
     [Serializable]
     public class CommandBatch
     {
@@ -31,9 +34,9 @@ namespace AckAck
             _eventStore = connection;
         }
 
-        public async Task AppendAsync(IEnumerable<Command> commands)
+        public Task AppendAsync(IEnumerable<Command> commands)
         {
-            await _eventStore.AppendToStreamAsync("akka", ExpectedVersion.Any, ToEventData(commands));
+            return _eventStore.AppendToStreamAsync("akka", ExpectedVersion.Any, ToEventData(commands));
         }
 
         private EventData ToEventData(IEnumerable<Command> commands)

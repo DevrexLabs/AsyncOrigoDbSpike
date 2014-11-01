@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Configuration;
 using System.Runtime.Remoting.Messaging;
 
 namespace AckAck
@@ -37,14 +38,19 @@ namespace AckAck
     }
 
     [Serializable]
-    public class Query
+    public abstract class Query<M, R> : Query
     {
-        public readonly string Value;
-
-        public Query(string query)
+        public abstract R Execute(M model);
+        public override object ExecuteImpl(object model)
         {
-            Value = query;
+            return Execute((M)model);
         }
+    }
+
+    [Serializable]
+    public abstract class Query
+    {
+        public abstract object ExecuteImpl(object model);
     }
 
     [Serializable]

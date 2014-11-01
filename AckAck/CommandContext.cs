@@ -1,16 +1,17 @@
-﻿using Akka.Actor;
+﻿
+using System.Threading.Tasks.Dataflow;
 
 namespace AckAck
 {
     public sealed class CommandContext
     {
         public readonly Command Command;
-        public readonly ActorRef Initiator;
+        public readonly WriteOnceBlock<object> Response;
 
-        public CommandContext(Command command, ActorRef actorRef)
+        public CommandContext(Command command, WriteOnceBlock<object> response)
         {
             Command = command;
-            Initiator = actorRef;
+            Response = response;
         }
     }
 }

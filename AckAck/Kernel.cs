@@ -13,5 +13,10 @@ namespace AckAck
         {
             return command.ExecuteImpl(_model);
         }
+
+        public object Execute(Query query)
+        {
+            return query.ExecuteImpl(_model);
+        }
     }
 }
