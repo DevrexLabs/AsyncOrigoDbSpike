@@ -12,11 +12,9 @@ namespace AckAck
         private TplJournalWriter _journalWriter;
         private Dispatcher _dispatcher;
 
-        public Prevayler(M model, int batchSize = 100)
+        public Prevayler(M model, int batchSize)
         {
             // the kernel is an origodb component which 
-            // synchronizes reads and writes to the model
-            // will be shared by 
             var kernel = new Kernel(model);
             _dispatcher = new Dispatcher(kernel);
 
@@ -61,6 +59,7 @@ namespace AckAck
 
         public void Dispose()
         {
+            _journalWriter.Dispose();
         }
 
     }

@@ -25,7 +25,7 @@ namespace Runner
             sw.Stop();
             Console.WriteLine("async elapsed: " + sw.Elapsed);
             prevayler.Dispose();
-
+            Console.ReadLine();
         }
     }
 }

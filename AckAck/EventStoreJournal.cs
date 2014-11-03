@@ -10,8 +10,6 @@ using EventStore.ClientAPI;
 namespace AckAck
 {
 
-
-
     [Serializable]
     public class CommandBatch
     {
@@ -45,7 +43,6 @@ namespace AckAck
             var stream = new MemoryStream();
             _formatter.Serialize(stream, new CommandBatch(commands));
             return new EventData(id, "akka", false, stream.ToArray(), null);
-
         }
 
         public void Dispose()

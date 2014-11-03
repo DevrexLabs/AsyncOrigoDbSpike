@@ -39,7 +39,6 @@ namespace AckAck.Test
             BufferBlock<int> buffer = new BufferBlock<int>();
             var reporter = new ActionBlock<int>(i => Console.WriteLine(i));
             ActionBlock<int> actionBlock = new ActionBlock<int>(
-
                 i =>
                 {
                     Thread.Sleep(i);
@@ -94,13 +93,18 @@ namespace AckAck.Test
         [Test]
         public void ProgressiveBatchSizes()
         {
-            foreach (var batchSize in Enumerable.Range(0, 12).Select(i => 10 * Math.Pow(2, i)))
+            foreach (var batchSize in Enumerable.Range(0, 10).Select(i => 10 * Math.Pow(2, i)))
             {
                 _batchSize = (int)batchSize;
                 Smoke();
             }
         }
 
+        private IEnumerable<int> i_300_6000()
+        {
+            return Enumerable.Range(6, 120).Select(i => i*50);
+        }
+            
         [Test]
         public void CorrectnessTest()
         {
