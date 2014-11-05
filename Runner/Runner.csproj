@@ -53,13 +53,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AckAck.Test\AckAck.Test.csproj">
+    <ProjectReference Include="..\AckAck.Test\AsyncOrigoSpike.Test.csproj">
       <Project>{9a85ce33-5324-4f1c-8f3e-41b2752490cc}</Project>
-      <Name>AckAck.Test</Name>
+      <Name>AsyncOrigoSpike.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AckAck\AckAck.csproj">
+    <ProjectReference Include="..\AckAck\AsyncOrigoSpike.Core.csproj">
       <Project>{e0c71b98-17af-4e95-abc3-e8d31c631696}</Project>
-      <Name>AckAck</Name>
+      <Name>AsyncOrigoSpike.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

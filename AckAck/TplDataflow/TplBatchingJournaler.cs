@@ -5,23 +5,23 @@ using System.Threading;
 using System.Threading.Tasks.Dataflow;
 
 
-namespace AckAck
+namespace AsyncOrigoSpike
 {
     
-    public class TplJournalWriter : IDisposable
+    public class TplBatchingJournaler : IDisposable
     {
         
         private readonly IJournalWriter _journalWriter;
         private Timer _timer;
 
         //commands start here
-        private readonly BatchBlock<CommandContext> _requestQueue;
+        private readonly BatchBlock<CommandRequest> _requestQueue;
 
         //then go here at given intervals or when the batch size is reached
-        private ActionBlock<CommandContext[]> _writerBlock;
+        private ActionBlock<CommandRequest[]> _writerBlock;
 
         //after journaling, commands are passed to the dispatcher for scheduling
-        private readonly Dispatcher _dispatcher;
+        private readonly ExecutionPipeline _dispatcher;
 
         //profiling stuff
         private List<int> _batchSizes = new List<int>();
@@ -30,15 +30,15 @@ namespace AckAck
 
         public TimeSpan Interval { get; set; }
 
-        public TplJournalWriter(IJournalWriter journalWriter, Dispatcher dispatcher, int batchSize)
+        public TplBatchingJournaler(IJournalWriter journalWriter, ExecutionPipeline dispatcher, int batchSize)
         {
             Interval = TimeSpan.FromMilliseconds(16);
             _journalWriter = journalWriter;
             _dispatcher = dispatcher;
 
-            _writerBlock = new ActionBlock<CommandContext[]>(batch => Go(batch));
+            _writerBlock = new ActionBlock<CommandRequest[]>(batch => Go(batch));
 
-            _requestQueue = new BatchBlock<CommandContext>(batchSize);
+            _requestQueue = new BatchBlock<CommandRequest>(batchSize);
             _requestQueue.LinkTo(_writerBlock);
             
         }
@@ -56,7 +56,7 @@ namespace AckAck
             _timer.Change(Interval, TimeSpan.FromMilliseconds(-1));            
         }
 
-        public void Post(CommandContext request)
+        public void Post(CommandRequest request)
         {
             if (_timer == null)
             {
@@ -66,7 +66,7 @@ namespace AckAck
             _requestQueue.Post(request);
         }
 
-        private void Go(CommandContext[] batch)
+        private void Go(CommandRequest[] batch)
         {
             _batchSizes.Add(batch.Length);
             _journalWriter.AppendAsync(batch.Select(ctx => ctx.Command))

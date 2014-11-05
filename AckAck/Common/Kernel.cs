@@ -1,5 +1,10 @@
-namespace AckAck
+namespace AsyncOrigoSpike
 {
+
+    /// <summary>
+    /// Encapsulates the in-memory object graph,
+    /// executes commands and queries
+    /// </summary>
     public class Kernel
     {
         readonly object _model;

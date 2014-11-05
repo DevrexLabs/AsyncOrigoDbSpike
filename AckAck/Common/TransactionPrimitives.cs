@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Net.Configuration;
-using System.Runtime.Remoting.Messaging;
 
-namespace AckAck
+
+namespace AsyncOrigoSpike
 {
     [Serializable]
     public abstract class Command<M, R> : Command
@@ -26,16 +25,6 @@ namespace AckAck
         }
     }
 
-
-    public class Message
-    {
-        public readonly int Slot;
-
-        public Message(int slot)
-        {
-            Slot = slot;
-        }
-    }
 
     [Serializable]
     public abstract class Query<M, R> : Query

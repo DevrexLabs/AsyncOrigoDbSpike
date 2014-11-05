@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace AckAck
+namespace AsyncOrigoSpike
 {
-    public interface IJournalWriter : IDisposable
-    {
-        Task AppendAsync(IEnumerable<Command> commands);
-    }
 
+    /// <summary>
+    /// For baseline comparison of internal performance
+    /// </summary>
     public class NullJournalWriter : IJournalWriter
     {
         public Task AppendAsync(IEnumerable<Command> commands)

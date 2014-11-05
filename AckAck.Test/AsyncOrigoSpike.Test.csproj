@@ -7,8 +7,8 @@
     <ProjectGuid>{9A85CE33-5324-4F1C-8F3E-41B2752490CC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AckAck.Test</RootNamespace>
-    <AssemblyName>AckAck.Test</AssemblyName>
+    <RootNamespace>AsyncOrigoSpike</RootNamespace>
+    <AssemblyName>AsyncOrigoSpike.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -60,18 +60,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="TestModel\AddItemCommand.cs" />
+    <Compile Include="TheTests.cs" />
+    <Compile Include="TestModel\GetSumQuery.cs" />
+    <Compile Include="TestModel\IntModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestModel\SumCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AckAck\AckAck.csproj">
+    <ProjectReference Include="..\AckAck\AsyncOrigoSpike.Core.csproj">
       <Project>{E0C71B98-17AF-4E95-ABC3-E8D31C631696}</Project>
-      <Name>AckAck</Name>
+      <Name>AsyncOrigoSpike.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

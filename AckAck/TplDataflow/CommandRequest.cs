@@ -1,14 +1,14 @@
 ﻿
 using System.Threading.Tasks.Dataflow;
 
-namespace AckAck
+namespace AsyncOrigoSpike
 {
-    public sealed class CommandContext
+    public sealed class CommandRequest
     {
         public readonly Command Command;
         public readonly WriteOnceBlock<object> Response;
 
-        public CommandContext(Command command, WriteOnceBlock<object> response)
+        public CommandRequest(Command command, WriteOnceBlock<object> response)
         {
             Command = command;
             Response = response;

@@ -1,4 +1,4 @@
-﻿namespace AckAck
+﻿namespace AsyncOrigoSpike
 {
     sealed class JournalAcknowledgement
     {

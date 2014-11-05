@@ -1,15 +1,13 @@
 ﻿using System.Threading.Tasks.Dataflow;
 
-namespace AckAck
+namespace AsyncOrigoSpike
 {
-
-
-    internal class QueryContext
+    internal class QueryRequest
     {
         public readonly Query Query;
         public readonly WriteOnceBlock<object> Response;
 
-        public QueryContext(Query query, WriteOnceBlock<object> responseBlock)
+        public QueryRequest(Query query, WriteOnceBlock<object> responseBlock)
         {
             Response = responseBlock;
             Query = query;
