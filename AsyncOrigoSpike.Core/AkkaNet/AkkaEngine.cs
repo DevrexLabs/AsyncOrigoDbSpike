@@ -34,7 +34,7 @@ namespace AsyncOrigoSpike
             var journaler = _actorSystem.ActorOf(Props.Create(() => new AkkaJournaler(executor, batchSize, journalWriter)));
 
             //dispatcher prepares initial message and passes to journaler
-            _dispatcher = _actorSystem.ActorOf(Props.Create(() => new Dispatcher(journaler)));
+            _dispatcher = _actorSystem.ActorOf(Props.Create(() => new Dispatcher(journaler, executor)));
         }
 
         public Task<R> ExecuteAsync<R>(Command<M,R> command)
@@ -59,12 +59,12 @@ namespace AsyncOrigoSpike
 
         public Task<R> ExecuteAsync<R>(Query<M, R> query)
         {
-            throw new NotImplementedException();
+            return _dispatcher.Ask<R>(query);
         }
 
         public R Execute<R>(Query<M, R> query)
         {
-            throw new NotImplementedException();
+            return ExecuteAsync(query).Result;
         }
 
         public void Dispose()

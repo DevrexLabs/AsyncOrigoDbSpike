@@ -54,7 +54,6 @@ namespace AsyncOrigoSpike.Test
         public IEnumerable<int> ProgressiveBatchSizes()
         {
             return Enumerable.Range(0, 10).Select(i => 10 * (int)Math.Pow(2, i));
-            //return batchSizes.SelectMany(bs => CreateEngines<List<string>>(bs).Select(e => Tuple.Create(bs, e)));
         }
 
         private IEnumerable<IEngine<M>> CreateEngines<M>(int batchSize) where M : new()

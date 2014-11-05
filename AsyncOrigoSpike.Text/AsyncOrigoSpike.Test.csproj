@@ -71,12 +71,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AckAck\AsyncOrigoSpike.Core.csproj">
+    <ProjectReference Include="..\AsyncOrigoSpike.Core\AsyncOrigoSpike.Core.csproj">
       <Project>{E0C71B98-17AF-4E95-ABC3-E8D31C631696}</Project>
       <Name>AsyncOrigoSpike.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
