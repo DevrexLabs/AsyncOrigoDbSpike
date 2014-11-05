@@ -20,7 +20,7 @@ namespace AsyncOrigoSpike
         readonly IJournalWriter _journalWriter;
 
         //wire up the disruptor ring buffers and handlers
-        public DisruptorEngine(M model, IJournalWriter journalWriter, int batchSize)
+        public DisruptorEngine(M model, int batchSize, IJournalWriter journalWriter)
         {
             _journalWriter = journalWriter;
             var kernel = new Kernel(model);

@@ -62,6 +62,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AkkaNet\CommandContext.cs" />
+    <Compile Include="AkkaNet\Dispatcher.cs" />
+    <Compile Include="AkkaNet\Executor.cs" />
+    <Compile Include="AkkaNet\AkkaJournaler.cs" />
+    <Compile Include="AkkaNet\AkkaEngine.cs" />
     <Compile Include="Common\CommandBatch.cs" />
     <Compile Include="TplDataflow\CommandRequest.cs" />
     <Compile Include="DisruptorNet\Request.cs" />
