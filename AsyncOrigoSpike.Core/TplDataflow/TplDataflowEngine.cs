@@ -6,13 +6,13 @@ namespace AsyncOrigoSpike
     /// <summary>
     /// IEngine implementation using the TPL Dataflow library
     /// </summary>
-    public class TplEngine<M> : IEngine<M>
+    public class TplDataflowEngine<M> : IEngine<M>
     {
 
         readonly TplBatchingJournaler _journaler;
         readonly ExecutionPipeline _executionPipeline;
 
-        public TplEngine(M model, int batchSize, IJournalWriter journalWriter)
+        public TplDataflowEngine(M model, int batchSize, IJournalWriter journalWriter)
         {
             var kernel = new Kernel(model);
             _executionPipeline = new ExecutionPipeline(kernel);

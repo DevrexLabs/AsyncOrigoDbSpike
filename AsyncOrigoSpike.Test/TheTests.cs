@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using AsyncOrigoSpike.TplNet;
 using NUnit.Framework;
 
 namespace AsyncOrigoSpike.Test
@@ -58,9 +59,11 @@ namespace AsyncOrigoSpike.Test
 
         private IEnumerable<IEngine<M>> CreateEngines<M>(int batchSize) where M : new()
         {
+            yield return new TplNetEngine<M>(new M(), batchSize, EventStoreWriter.Create());
             yield return new AkkaEngine<M>(new M(), batchSize, EventStoreWriter.Create());
-            yield return new TplEngine<M>(new M(), batchSize, EventStoreWriter.Create());
+            yield return new TplDataflowEngine<M>(new M(), batchSize, EventStoreWriter.Create());
             yield return new DisruptorEngine<M>(new M(), batchSize, EventStoreWriter.Create());
+            
         }
 
         private IEnumerable<IEngine<IntModel>> CreateCorrectnessEngines()
@@ -87,7 +90,6 @@ namespace AsyncOrigoSpike.Test
                 Task.WaitAll(tasks.ToArray());
                 int result = engine.ExecuteAsync(new GetSumQuery()).Result;
                 Assert.AreEqual(result, sum);
-                engine.Dispose();
             }
         }
     }
